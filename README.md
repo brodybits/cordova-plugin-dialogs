@@ -1,6 +1,6 @@
 ---
-title: Dialogs
-description: Use native dialog UI elements
+title: Dialogs with popups for Windows
+description: Use native dialog UI elements (with popups for Windows)
 ---
 <!--
 # license: Licensed to the Apache Software Foundation (ASF) under one
@@ -25,7 +25,7 @@ description: Use native dialog UI elements
 |:-:|:-:|:-:|:-:|:-:|:-:|
 |[![Build Status](http://cordova-ci.cloudapp.net:8080/buildStatus/icon?job=cordova-periodic-build/PLATFORM=android-4.4,PLUGIN=cordova-plugin-dialogs)](http://cordova-ci.cloudapp.net:8080/job/cordova-periodic-build/PLATFORM=android-4.4,PLUGIN=cordova-plugin-dialogs/)|[![Build Status](http://cordova-ci.cloudapp.net:8080/buildStatus/icon?job=cordova-periodic-build/PLATFORM=android-5.1,PLUGIN=cordova-plugin-dialogs)](http://cordova-ci.cloudapp.net:8080/job/cordova-periodic-build/PLATFORM=android-5.1,PLUGIN=cordova-plugin-dialogs/)|[![Build Status](http://cordova-ci.cloudapp.net:8080/buildStatus/icon?job=cordova-periodic-build/PLATFORM=ios-9.3,PLUGIN=cordova-plugin-dialogs)](http://cordova-ci.cloudapp.net:8080/job/cordova-periodic-build/PLATFORM=ios-9.3,PLUGIN=cordova-plugin-dialogs/)|[![Build Status](http://cordova-ci.cloudapp.net:8080/buildStatus/icon?job=cordova-periodic-build/PLATFORM=ios-10.0,PLUGIN=cordova-plugin-dialogs)](http://cordova-ci.cloudapp.net:8080/job/cordova-periodic-build/PLATFORM=ios-10.0,PLUGIN=cordova-plugin-dialogs/)|[![Build Status](http://cordova-ci.cloudapp.net:8080/buildStatus/icon?job=cordova-periodic-build/PLATFORM=windows-10-store,PLUGIN=cordova-plugin-dialogs)](http://cordova-ci.cloudapp.net:8080/job/cordova-periodic-build/PLATFORM=windows-10-store,PLUGIN=cordova-plugin-dialogs/)|[![Build Status](https://travis-ci.org/apache/cordova-plugin-dialogs.svg?branch=master)](https://travis-ci.org/apache/cordova-plugin-dialogs)|
 
-# cordova-plugin-dialogs
+# cordova-plugin-dialogs-with-windows-popups
 
 This plugin provides access to some native dialog UI elements
 via a global `navigator.notification` object.
@@ -41,12 +41,13 @@ Report issues on the [Apache Cordova issue tracker](https://issues.apache.org/ji
 
 ## Installation
 
-    cordova plugin add cordova-plugin-dialogs
+TBD
 
 ## Methods
 
 - `navigator.notification.alert`
 - `navigator.notification.confirm`
+- `navigator.notification.popup` (Windows only)
 - `navigator.notification.prompt`
 - `navigator.notification.beep`
 
@@ -175,6 +176,25 @@ indexing, so the value is `1`, `2`, `3`, etc.
 ### Firefox OS Quirks:
 
 Both native-blocking `window.confirm()` and non-blocking `navigator.notification.confirm()` are available.
+
+## navigator.notification.popup
+
+For Windows only: similar to `navigator.notification.confirm`, using `Windows.UI.Popups.PopupMenu` instead of `Windows.UI.Popups.MessageDialog`. No hard limit to number of buttons. Additional coordinates parameter:
+- __coordinates__: Object with `x` and `y` coordinate members. _(Object)_  (Optional, defaults to `{x:0,y:0}`)
+
+### Example
+
+    function onConfirm(buttonIndex) {
+        alert('You selected button ' + buttonIndex);
+    }
+
+    navigator.notification.confirm(
+        'You are the winner!', // message
+         onConfirm,            // callback to invoke with index of button pressed
+        'Game Over',           // title
+        ['Restart','Exit'],    // buttonLabels
+        {x: 50, y: 75}         // coordinates
+    );
 
 ## navigator.notification.prompt
 

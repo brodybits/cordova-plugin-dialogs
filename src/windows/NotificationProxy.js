@@ -240,6 +240,52 @@ module.exports = {
         }
     },
 
+    popup:function(win, loseX, args) {
+
+        if (isAlertShowing) {
+            var later = function () {
+                module.exports.confirm(win, loseX, args);
+            };
+            alertStack.push(later);
+            return;
+        }
+
+        isAlertShowing = true;
+
+        try {
+            var message = args[0];
+            var _title = args[1];
+            var buttons = args[2];
+            var coords = args[3];
+
+            var md = new Windows.UI.Popups.PopupMenu(message, _title);
+
+            buttons.forEach(function(buttonLabel) {
+                md.commands.append(new Windows.UI.Popups.UICommand(buttonLabel));
+            });
+
+            md.showAsync(coords).then(function(res) {
+                isAlertShowing = false;
+                var result = res ? buttons.indexOf(res.label) + 1 : 0;
+                if (win) {
+                    win(result);
+                }
+                if (alertStack.length) {
+                    setTimeout(alertStack.shift(), 0);
+                }
+
+            });
+        } catch (e) {
+            // set isAlertShowing flag back to false in case of exception
+            isAlertShowing = false;
+            if (alertStack.length) {
+                setTimeout(alertStack.shift(), 0);
+            }
+            // rethrow exception
+            throw e;
+        }
+    },
+
     beep:function(winX, loseX, args) {
 
         // set a default args if it is not set

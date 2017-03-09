@@ -67,6 +67,22 @@ module.exports = {
         exec(resultCallback, null, "Notification", "confirm", [_message, _title, _buttonLabels]);
     },
 
+    popup: function(message, resultCallback, title, buttonLabels, coords) {
+        var _message = (typeof message === "string" ? message : JSON.stringify(message));
+        var _title = (typeof title === "string" ? title : "Confirm");
+        var _buttonLabels = (buttonLabels || ["OK", "Cancel"]);
+        var _coords = (coords || {x:0,y:0});
+
+        // Strings are deprecated!
+        if (typeof _buttonLabels === 'string') {
+            console.log("Notification.popup(string, function, string, string) is deprecated.  Use Notification.confirm(string, function, string, array).");
+        }
+
+        _buttonLabels = convertButtonLabels(_buttonLabels);
+
+        exec(resultCallback, null, "Notification", "popup", [_message, _title, _buttonLabels, _coords]);
+    },
+
     /**
      * Open a native prompt dialog, with a customizable title and button text.
      * The following results are returned to the result callback:
