@@ -48,6 +48,7 @@ TBD
 - `navigator.notification.alert`
 - `navigator.notification.confirm`
 - `navigator.notification.popup` (Windows only)
+- `navigator.notification.popup2` (Windows only)
 - `navigator.notification.prompt`
 - `navigator.notification.beep`
 
@@ -195,6 +196,10 @@ For Windows only: similar to `navigator.notification.confirm`, using `Windows.UI
         ['Restart','Exit'],    // buttonLabels
         {x: 50, y: 75}         // coordinates
     );
+
+## navigator.notification.popup2
+
+For Windows only: same API as `navigator.notification.confirm`, using HTML based on Windows prompt implementation. No coordinates specified.
 
 ## navigator.notification.prompt
 

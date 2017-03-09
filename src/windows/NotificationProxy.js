@@ -129,6 +129,72 @@ function createPromptDialog(title, message, buttons, defaultText, callback) {
     return dlgWrap;
 }
 
+function createPopup2Dialog(title, message, buttons, defaultText, callback) {
+
+    var isPhone = cordova.platformId === "windows" && WinJS.Utilities.isPhone;
+    var isWindows = !!cordova.platformId.match(/windows/);
+
+    createCSSElem("notification.css");
+
+    var dlgWrap = document.createElement("div");
+    dlgWrap.className = "dlgWrap";
+
+    var dlg = document.createElement("div");
+    dlg.className = "dlgContainer";
+
+    if (isWindows) {
+        dlg.className += " dlgContainer-windows";
+    } else if (isPhone) {
+        dlg.className += " dlgContainer-phone";
+    }
+
+
+    // dialog layout template
+    dlg.innerHTML = _cleanHtml("<br/>");
+
+    function makeButtonCallback(idx) {
+        return function () {
+            dlgWrap.parentNode.removeChild(dlgWrap);
+
+            if (callback) {
+                callback(idx);
+            }
+        };
+    }
+
+    function addButton(idx, label) {
+        var button = document.createElement('button');
+        button.className = "dlgButton";
+        button.tabIndex = idx;
+        button.onclick = makeButtonCallback(idx + 1);
+        if (idx === 0) {
+            button.className += " dlgButtonFirst";
+        }
+        button.appendChild(document.createTextNode(label));
+        dlg.appendChild(button);
+    }
+
+    // reverse order is used since we align buttons to the right
+    for (var idx = buttons.length - 1; idx >= 0; idx--) {
+        addButton(idx, buttons[idx]);
+    }
+
+    dlgWrap.appendChild(dlg);
+    document.body.appendChild(dlgWrap);
+
+    // add Enter/Return key handling
+    var defaultButton = dlg.querySelector(".dlgButtonFirst");
+    dlg.addEventListener("keypress",function(e) {
+        if (e.keyCode === 13) { // enter key
+            if(defaultButton) {
+                defaultButton.click();
+            }
+        }
+    });
+
+    return dlgWrap;
+}
+
 module.exports = {
     alert:function(win, loseX, args) {
 
@@ -275,6 +341,41 @@ module.exports = {
                 }
 
             });
+        } catch (e) {
+            // set isAlertShowing flag back to false in case of exception
+            isAlertShowing = false;
+            if (alertStack.length) {
+                setTimeout(alertStack.shift(), 0);
+            }
+            // rethrow exception
+            throw e;
+        }
+    },
+
+    popup2: function (win, lose, args) {
+        if (isAlertShowing) {
+            var later = function () {
+                module.exports.prompt(win, lose, args);
+            };
+            alertStack.push(later);
+            return;
+        }
+
+        isAlertShowing = true;
+
+        var message = args[0],
+            title = args[1],
+            buttons = args[2],
+            defaultText = args[3];
+
+        try {
+            createPopup2Dialog(title, message, buttons, defaultText, function (evt) {
+                isAlertShowing = false;
+                if (win) {
+                    win(evt);
+                }
+            });
+
         } catch (e) {
             // set isAlertShowing flag back to false in case of exception
             isAlertShowing = false;
